@@ -1,0 +1,1763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DanSathi - Caring for Elders with Technology</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .navbar {
+            background: linear-gradient(135deg, #e8f4f8 0%, #f0f9f0 100%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+        
+        .hero-section {
+            background: linear-gradient(135deg, #dbeafe 0%, #dbeef8 100%);
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+            position: absolute;
+            right: 0;
+            top: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 10;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(16, 185, 129, 0.4);
+        }
+        
+        .section {
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .form-input {
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .inventory-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-overlay.active {
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .modal-overlay.active {
+            overflow-y: auto;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            margin: auto;
+        }
+        
+        .success-badge {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+        
+        .elderly-avatar {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- NAVIGATION BAR -->
+    <nav class="navbar sticky top-0 z-50 shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <div class="flex items-center space-x-2 cursor-pointer" onclick="showSection('home')">
+                    <i class="fas fa-heart text-blue-500 text-2xl"></i>
+                    <span class="text-2xl font-bold text-blue-600">DanSathi</span>
+                </div>
+                
+                <div class="hidden md:flex space-x-8">
+                    <button onclick="showSection('home')" class="nav-btn text-gray-700 font-medium hover:text-blue-600 transition">
+                        <i class="fas fa-home mr-2"></i>Home
+                    </button>
+                    <button onclick="showSection('donate')" class="nav-btn text-gray-700 font-medium hover:text-blue-600 transition">
+                        <i class="fas fa-gift mr-2"></i>Donate
+                    </button>
+                    <button onclick="showSection('visit')" class="nav-btn text-gray-700 font-medium hover:text-blue-600 transition">
+                        <i class="fas fa-calendar mr-2"></i>Visit
+                    </button>
+                    <button onclick="showSection('admin-login')" class="nav-btn text-gray-700 font-medium hover:text-blue-600 transition">
+                        <i class="fas fa-lock mr-2"></i>Admin
+                    </button>
+                    <button onclick="showSection('contact')" class="nav-btn text-gray-700 font-medium hover:text-blue-600 transition">
+                        <i class="fas fa-envelope mr-2"></i>Contact Us
+                    </button>
+                </div>
+                
+                <!-- Mobile Menu -->
+                <button class="md:hidden text-gray-700 text-2xl" onclick="toggleMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+            
+            <!-- Mobile Navigation -->
+            <div id="mobileMenu" class="md:hidden pb-4 hidden">
+                <button onclick="showSection('home'); toggleMobileMenu()" class="block w-full text-left py-2 px-4 hover:bg-gray-100 rounded transition">
+                    <i class="fas fa-home mr-2"></i>Home
+                </button>
+                <button onclick="showSection('donate'); toggleMobileMenu()" class="block w-full text-left py-2 px-4 hover:bg-gray-100 rounded transition">
+                    <i class="fas fa-gift mr-2"></i>Donate
+                </button>
+                <button onclick="showSection('visit'); toggleMobileMenu()" class="block w-full text-left py-2 px-4 hover:bg-gray-100 rounded transition">
+                    <i class="fas fa-calendar mr-2"></i>Visit
+                </button>
+                <button onclick="showSection('admin-login'); toggleMobileMenu()" class="block w-full text-left py-2 px-4 hover:bg-gray-100 rounded transition">
+                    <i class="fas fa-lock mr-2"></i>Admin
+                </button>
+                <button onclick="showSection('contact'); toggleMobileMenu()" class="block w-full text-left py-2 px-4 hover:bg-gray-100 rounded transition">
+                    <i class="fas fa-envelope mr-2"></i>Contact Us
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HOME SECTION -->
+    <section id="home" class="section active">
+        <!-- HERO SECTION -->
+        <div class="hero-section">
+            <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=800&q=80" alt="Happy Elderly People" class="hero-image">
+            <div class="hero-content max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                <div class="max-w-2xl">
+                    <h1 class="text-5xl md:text-6xl font-bold text-gray-800 mb-6 leading-tight">
+                        Caring for Elders<br><span class="text-blue-600">with Technology</span>
+                    </h1>
+                    <p class="text-xl text-gray-600 mb-8 leading-relaxed">
+                        DanSathi provides compassionate living environment for our senior citizens. Make donations, schedule visits, and help us care for those who built our world.
+                    </p>
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="showSection('donate')" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">
+                            <i class="fas fa-gift mr-2"></i>Donate Now
+                        </button>
+                        <button onclick="showSection('visit')" class="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold border-2 border-blue-600 hover:bg-blue-50 transition">
+                            <i class="fas fa-calendar mr-2"></i>Schedule Visit
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FEATURES SECTION -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+            <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">Why Choose DanSathi</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Feature 1 -->
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="bg-blue-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-heart text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Compassionate Care</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Our team provides 24/7 personalized care with love and respect for every individual.
+                    </p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="bg-green-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-flask text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Modern Facilities</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        State-of-the-art medical equipment and technology integrated with warm human touch.
+                    </p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="card-hover bg-white p-8 rounded-2xl shadow-lg">
+                    <div class="bg-yellow-100 w-16 h-16 rounded-xl flex items-center justify-center mb-6">
+                        <i class="fas fa-users text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">Community Living</h3>
+                    <p class="text-gray-600 leading-relaxed">
+                        Activities, events, and social programs that keep our seniors engaged and happy.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- TESTIMONIALS SECTION -->
+        <div class="bg-gradient-to-r from-blue-50 to-green-50 py-20">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="text-4xl font-bold text-gray-800 mb-12 text-center">What Families Say</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Testimonial 1 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" alt="Family" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <p class="font-semibold text-gray-800">John's Family</p>
+                                <p class="text-sm text-gray-600">Family of a resident</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">
+                            "My mother has never been happier. The care is exceptional and everyone treats her like family. Thank you DanSathi!"
+                        </p>
+                    </div>
+
+                    <!-- Testimonial 2 -->
+                    <div class="bg-white p-8 rounded-2xl shadow-lg">
+                        <div class="flex items-center mb-4">
+                            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" alt="Family" class="w-12 h-12 rounded-full mr-4">
+                            <div>
+                                <p class="font-semibold text-gray-800">Sarah's Family</p>
+                                <p class="text-sm text-gray-600">Family of a resident</p>
+                            </div>
+                        </div>
+                        <p class="text-gray-700 italic">
+                            "The staff is incredibly caring and professional. I visit every week and see my father thriving. Peace of mind is priceless."
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DONATE SECTION -->
+    <section id="donate" class="section py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4 text-center">Make a Donation</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto text-lg">
+                Your generous donations help us provide better care and facilities for our senior residents. Choose from our list of needed items or contribute financially.
+            </p>
+
+            <!-- Bundle Donations -->
+            <div class="mb-16">
+                <div class="text-center mb-8">
+                    <span class="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-4 py-1 rounded-full text-sm font-semibold uppercase tracking-wider">Quick Donate</span>
+                    <h3 class="text-3xl font-bold text-gray-800 mt-4 mb-2">Bundle Donations</h3>
+                    <p class="text-gray-600 max-w-xl mx-auto">Simplify the decision-making process — one click donates a curated mix of essentials our elders need most.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+                    <!-- Care Package -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg card-hover transition cursor-pointer group" onclick="openBundleModal('Care Package', ['Food & Nutrition', 'Medicines', 'Hygiene Supplies'])">
+                        <div class="absolute inset-0 bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 opacity-90"></div>
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
+                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-8 -mb-8"></div>
+                        <div class="relative p-8 text-white">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white bg-opacity-20 w-14 h-14 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-box-open text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-2xl font-bold">Care Package</h4>
+                                    <p class="text-blue-200 text-sm">Most Popular</p>
+                                </div>
+                            </div>
+                            <p class="text-blue-100 mb-5 leading-relaxed">A complete care bundle with food, medicine, and hygiene supplies — everything an elder needs.</p>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-semibold"><i class="fas fa-utensils mr-1"></i>Food & Nutrition</span>
+                                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-semibold"><i class="fas fa-pills mr-1"></i>Medicines</span>
+                                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-semibold"><i class="fas fa-pump-soap mr-1"></i>Hygiene Supplies</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold">3 items included</span>
+                                <span class="bg-white text-blue-600 px-5 py-2 rounded-lg font-bold group-hover:bg-blue-50 transition"><i class="fas fa-gift mr-2"></i>Donate Bundle</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Winter Kit -->
+                    <div class="relative overflow-hidden rounded-2xl shadow-lg card-hover transition cursor-pointer group" onclick="openBundleModal('Winter Kit', ['Blankets', 'Sweaters', 'Warm Nutrition'])">
+                        <div class="absolute inset-0 bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 opacity-90"></div>
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-white opacity-5 rounded-full -mr-10 -mt-10"></div>
+                        <div class="absolute bottom-0 left-0 w-24 h-24 bg-white opacity-5 rounded-full -ml-8 -mb-8"></div>
+                        <div class="relative p-8 text-white">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-white bg-opacity-20 w-14 h-14 rounded-xl flex items-center justify-center mr-4">
+                                    <i class="fas fa-snowflake text-2xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="text-2xl font-bold">Winter Kit</h4>
+                                    <p class="text-orange-200 text-sm">Seasonal Essential</p>
+                                </div>
+                            </div>
+                            <p class="text-orange-100 mb-5 leading-relaxed">Keep our seniors warm and nourished during the cold months with blankets, sweaters, and hot meals.</p>
+                            <div class="flex flex-wrap gap-2 mb-5">
+                                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-semibold"><i class="fas fa-blanket mr-1"></i>Blankets</span>
+                                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-semibold"><i class="fas fa-tshirt mr-1"></i>Sweaters</span>
+                                <span class="bg-white bg-opacity-20 px-3 py-1 rounded-full text-xs font-semibold"><i class="fas fa-mug-hot mr-1"></i>Warm Nutrition</span>
+                            </div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-lg font-bold">3 items included</span>
+                                <span class="bg-white text-red-600 px-5 py-2 rounded-lg font-bold group-hover:bg-red-50 transition"><i class="fas fa-gift mr-2"></i>Donate Bundle</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Individual Items -->
+            <div class="text-center mb-8">
+                <h3 class="text-3xl font-bold text-gray-800 mb-2">Individual Items</h3>
+                <p class="text-gray-600">Or pick specific items to donate</p>
+            </div>
+
+            <!-- Inventory Grid -->
+            <div id="inventoryGrid" class="inventory-grid mb-12">
+                <!-- Items will be loaded here by JavaScript -->
+            </div>
+
+            <!-- Financial donation block -->
+            <div class="max-w-md mx-auto mb-12">
+                <h3 class="text-2xl font-bold text-gray-800 mb-4 text-center">Donate Money</h3>
+                <form id="moneyForm" class="space-y-4" onsubmit="startUpiDonation(event)">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Donor ID</label>
+                        <input type="text" readonly class="form-input w-full bg-gray-100 text-gray-600 cursor-not-allowed" id="moneyDonorId">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Amount (₹)</label>
+                        <input type="number" step="0.01" min="1" required class="form-input w-full" id="moneyAmount" placeholder="Enter amount" />
+                    </div>
+                    <button type="submit" class="btn-primary text-white w-full py-3 rounded-lg font-semibold">
+                        <i class="fas fa-rupee-sign mr-2"></i>Generate UPI QR
+                    </button>
+                </form>
+
+                <div id="moneyQRContainer" class="mt-6 text-center"></div>
+                <div id="moneyStatus" class="mt-4 text-center text-gray-700"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISIT SECTION -->
+    <section id="visit" class="section py-20 bg-gradient-to-b from-blue-50 to-white">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4 text-center">Schedule a Visit</h2>
+            <p class="text-center text-gray-600 mb-12 text-lg">
+                <i class="fas fa-heart text-red-500 mr-2"></i>Spend time with our elders and make their day special
+            </p>
+
+            <div class="bg-white rounded-2xl shadow-lg p-8 md:p-12">
+                <form id="visitForm" onsubmit="submitVisit(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Visitor ID</label>
+                        <input type="text" readonly class="form-input w-full text-lg bg-gray-100 text-gray-600 cursor-not-allowed" id="visitorIdField">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Your Name</label>
+                        <input type="text" placeholder="Enter your full name" required class="form-input w-full text-lg" id="visitorName">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Email Address</label>
+                        <input type="email" placeholder="your@email.com" required class="form-input w-full text-lg" id="visitorEmail">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Phone Number</label>
+                        <input type="tel" placeholder="+91 9876543210" required class="form-input w-full text-lg" id="visitorPhone">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Preferred Date</label>
+                        <input type="date" required class="form-input w-full text-lg" id="visitDate">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Preferred Time</label>
+                        <input type="time" required class="form-input w-full text-lg" id="visitTime">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Message (Optional)</label>
+                        <textarea placeholder="Tell us anything special about your visit..." class="form-input w-full text-lg h-24 resize-none" id="visitMessage"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-secondary w-full text-white py-4 rounded-lg font-semibold text-lg">
+                        <i class="fas fa-check mr-2"></i>Confirm Visit
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- CONTACT US SECTION -->
+    <section id="contact" class="section py-20 bg-gradient-to-b from-white to-blue-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-4xl font-bold text-gray-800 mb-4 text-center">Contact Us</h2>
+            <p class="text-center text-gray-600 mb-12 max-w-2xl mx-auto text-lg">
+                Have questions or want to know more about DanSathi? Reach out to us and we'll get back to you as soon as possible.
+            </p>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <!-- Contact Form -->
+                <div class="bg-white rounded-2xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-800 mb-6"><i class="fas fa-paper-plane text-blue-500 mr-2"></i>Send us a Message</h3>
+                    <form id="contactForm" onsubmit="submitContactForm(event)" class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Your Name *</label>
+                            <input type="text" placeholder="Full Name" required class="form-input w-full" id="contactName">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+                            <input type="email" placeholder="your@email.com" required class="form-input w-full" id="contactEmail">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" placeholder="+91 9876543210" class="form-input w-full" id="contactPhone">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Message *</label>
+                            <textarea placeholder="Write your message here..." required class="form-input w-full h-32 resize-none" id="contactMessage"></textarea>
+                        </div>
+                        <button type="submit" class="btn-primary text-white w-full py-3 rounded-lg font-semibold text-lg">
+                            <i class="fas fa-paper-plane mr-2"></i>Send Message
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Contact Info -->
+                <div class="space-y-6">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover transition">
+                        <div class="flex items-center">
+                            <div class="bg-blue-100 w-14 h-14 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-map-marker-alt text-blue-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800">Our Address</h4>
+                                <p class="text-gray-600">123 Care Street, Compassion City, India - 400001</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover transition">
+                        <div class="flex items-center">
+                            <div class="bg-green-100 w-14 h-14 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-phone text-green-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800">Phone</h4>
+                                <p class="text-gray-600">+91 98765 43210</p>
+                                <p class="text-gray-500 text-sm">Mon - Sat, 9 AM to 6 PM</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover transition">
+                        <div class="flex items-center">
+                            <div class="bg-purple-100 w-14 h-14 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-envelope text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800">Email</h4>
+                                <p class="text-gray-600">contact@dansathi.org</p>
+                                <p class="text-gray-500 text-sm">We reply within 24 hours</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-2xl shadow-lg p-6 card-hover transition">
+                        <div class="flex items-center">
+                            <div class="bg-yellow-100 w-14 h-14 rounded-xl flex items-center justify-center mr-4">
+                                <i class="fas fa-clock text-yellow-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-lg font-bold text-gray-800">Visiting Hours</h4>
+                                <p class="text-gray-600">Monday - Saturday: 9:00 AM - 6:00 PM</p>
+                                <p class="text-gray-500 text-sm">Sunday: 10:00 AM - 2:00 PM</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN LOGIN SECTION -->
+    <section id="admin-login" class="section py-20">
+        <div class="max-w-md mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white rounded-2xl shadow-lg p-8">
+                <div class="text-center mb-8">
+                    <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-lock text-blue-600 text-2xl"></i>
+                    </div>
+                    <h2 class="text-3xl font-bold text-gray-800">Admin Login</h2>
+                    <p class="text-gray-600 mt-2">Secure access for staff only</p>
+                </div>
+
+                <form id="adminLoginForm" onsubmit="submitAdminLogin(event)" class="space-y-6">
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Username</label>
+                        <input type="text" placeholder="Enter username" required class="form-input w-full text-lg" id="adminUsername">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Password</label>
+                        <input type="password" placeholder="Enter password" required class="form-input w-full text-lg" id="adminPassword">
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full text-white py-3 rounded-lg font-semibold text-lg">
+                        <i class="fas fa-sign-in-alt mr-2"></i>Login
+                    </button>
+                </form>
+
+                <p class="text-center text-gray-600 mt-6 text-sm">
+                    Demo credentials: <br>
+                    <strong>Username:</strong> admin <br>
+                    <strong>Password:</strong> 1234
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ADMIN DASHBOARD SECTION -->
+    <section id="admin-dashboard" class="section py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-4xl font-bold text-gray-800">Inventory Management</h2>
+                <button onclick="logout()" class="bg-red-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-red-600 transition">
+                    <i class="fas fa-sign-out-alt mr-2"></i>Logout
+                </button>
+            </div>
+
+            <!-- Statistics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">Total Items</p>
+                            <p id="totalItems" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                        <div class="bg-blue-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-box text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">Total Donations</p>
+                            <p id="totalDonations" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                        <div class="bg-green-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-gift text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-lg p-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-gray-600 text-sm font-semibold mb-2">Pending Visits</p>
+                            <p id="pendingVisits" class="text-3xl font-bold text-gray-800">0</p>
+                        </div>
+                        <div class="bg-yellow-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                            <i class="fas fa-calendar text-yellow-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QR Code Management -->
+            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Payment QR Code Management</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- QR Code Display -->
+                    <div class="flex flex-col items-center">
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Current QR Code</label>
+                        <div class="bg-white p-4 rounded-lg border-2 border-purple-200 w-full max-w-sm">
+                            <img id="adminQRImg" src="payment-qr.png" alt="Current QR Code" class="w-full h-auto rounded" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=UPI%3A%2F%2Fpay%3Fpa%3Ddansathi%40upi%26pn%3DDanSathi%26am%3D%26tn%3DDonation'">
+                        </div>
+                        <p class="text-gray-600 text-sm mt-3 text-center">This QR code is shown to donors</p>
+                    </div>
+
+                    <!-- QR Code Input -->
+                    <div class="flex flex-col justify-center">
+                        <label class="block text-lg font-semibold text-gray-700 mb-3">Update QR Code</label>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">QR Code Image URL</label>
+                                <input type="url" placeholder="https://your-qr-code-url.png" class="form-input w-full" id="qrCodeURL">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Or Paste QR Data</label>
+                                <textarea placeholder="Paste UPI link or any QR code data..." class="form-input w-full h-20 resize-none" id="qrCodeData"></textarea>
+                                <p class="text-gray-500 text-xs mt-1">Example: upi://pay?pa=yourname@upi&pn=DanSathi</p>
+                            </div>
+                            <div class="pt-2">
+                                <button type="button" onclick="updateQRCodeFromURL()" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg font-semibold w-full transition mb-2">
+                                    <i class="fas fa-image mr-2"></i>Update from URL
+                                </button>
+                                <button type="button" onclick="generateQRFromData()" class="bg-pink-500 hover:bg-pink-600 text-white px-6 py-2 rounded-lg font-semibold w-full transition">
+                                    <i class="fas fa-qrcode mr-2"></i>Generate from Data
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add New Item -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Add New Donation Item</h3>
+                <form id="addItemForm" onsubmit="addItem(event)" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-2">Item ID</label>
+                        <input type="text" readonly class="form-input w-full bg-gray-100 text-gray-600 cursor-not-allowed" id="newItemId">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-2">Item Name</label>
+                        <input type="text" placeholder="e.g., Wheelchairs, Medicines" required class="form-input w-full" id="itemName">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-2">Stock Quantity</label>
+                        <input type="number" placeholder="0" required class="form-input w-full" id="itemQuantity" min="0">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-2">Image URL</label>
+                        <input type="url" placeholder="https://..." required class="form-input w-full" id="itemImage">
+                    </div>
+
+                    <div>
+                        <label class="block text-lg font-semibold text-gray-700 mb-2">Description</label>
+                        <input type="text" placeholder="Brief description" required class="form-input w-full" id="itemDescription">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <button type="submit" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold w-full">
+                            <i class="fas fa-plus mr-2"></i>Add Item to Inventory
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Inventory Table -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-8 border-b border-gray-200">
+                    <h3 class="text-2xl font-bold text-gray-800">Current Inventory</h3>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-gradient-to-r from-blue-50 to-green-50">
+                            <tr>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Image</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Item Name & ID</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Description</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Stock</th>
+                                <th class="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryTable" class="divide-y divide-gray-200">
+                            <!-- Items will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Donations Received -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mt-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Recent Donations</h3>
+                <div id="recentDonations" class="space-y-4">
+                    <!-- Donations will be listed here -->
+                </div>
+            </div>
+
+            <!-- Scheduled Visits -->
+            <div class="bg-white rounded-2xl shadow-lg p-8 mt-8">
+                <h3 class="text-2xl font-bold text-gray-800 mb-6">Scheduled Visits</h3>
+                <div id="scheduledVisits" class="space-y-4">
+                    <!-- Visits will be listed here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- DONATION MODAL -->
+    <div id="donationModal" class="modal-overlay" onclick="closeDonationModal(event)">
+        <div class="modal-content relative" style="max-width: 900px;" onclick="event.stopPropagation()">
+            <button onclick="closeDonationModal()" class="absolute top-4 right-4 text-gray-400 text-2xl hover:text-gray-600 z-10">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 w-full">Donor Information</h3>
+            
+            <div class="flex flex-col md:flex-row gap-8">
+            <!-- Left side: Form -->
+            <div class="flex-1">
+            <form id="donationForm" onsubmit="submitDonation(event)" class="space-y-4">
+                <div id="donationSuccess" class="success-badge hidden" style="display: none;"></div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Donor ID</label>
+                    <input type="text" readonly class="form-input w-full bg-gray-100 text-gray-600 cursor-not-allowed" id="donorIdField">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Item</label>
+                    <p id="selectedItem" class="text-lg font-semibold text-blue-600"></p>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Your Name *</label>
+                    <input type="text" placeholder="Full Name" required class="form-input w-full" id="donorName">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email Address *</label>
+                    <input type="email" placeholder="your@email.com" required class="form-input w-full" id="donorEmail">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Phone Number *</label>
+                    <input type="tel" placeholder="+91 9876543210" required class="form-input w-full" id="donorPhone">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Address *</label>
+                    <textarea placeholder="Full Address" required class="form-input w-full h-20 resize-none" id="donorAddress"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Quantity</label>
+                    <input type="number" placeholder="1" value="1" required class="form-input w-full" id="donationQuantity" min="1">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-3">Payment Method *</label>
+                    <div class="space-y-3">
+                        <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 transition">
+                            <input type="radio" name="paymentMethod" value="upi" required class="w-5 h-5" onchange="onPaymentMethodChange()">
+                            <span class="ml-3 font-semibold text-gray-700">
+                                <i class="fas fa-mobile text-blue-500 mr-2"></i>UPI Payment
+                            </span>
+                        </label>
+
+                        <label class="flex items-center p-3 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-blue-400 transition">
+                            <input type="radio" name="paymentMethod" value="person" required class="w-5 h-5" onchange="onPaymentMethodChange()">
+                            <span class="ml-3 font-semibold text-gray-700">
+                                <i class="fas fa-building text-blue-500 mr-2"></i>Donate in Person
+                            </span>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="upiTransactionSection" class="hidden">
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">UPI Transaction ID *</label>
+                    <input type="text" placeholder="e.g. A23B45C678" class="form-input w-full" id="upiTransactionId">
+                </div>
+
+                <button type="submit" class="btn-primary text-white w-full py-3 rounded-lg font-semibold text-lg mt-6" id="submitDonationBtn">
+                    <i class="fas fa-heart mr-2"></i>Complete Donation
+                </button>
+            </form>
+            </div>
+
+            <!-- Right side: QR Code -->
+            <div id="sideQRSection" class="flex-1 hidden flex-col items-center justify-center bg-gray-50 rounded-xl p-6 border-2 border-gray-100 h-fit my-auto">
+                <h4 class="text-xl font-bold text-purple-800 mb-2text-center"><i class="fas fa-qrcode mr-2"></i>Scan to Pay</h4>
+                <p class="text-sm text-gray-600 mb-4 text-center">Scan using any UPI app</p>
+                <div class="bg-white p-3 rounded-xl shadow-md">
+                    <img id="sideQRCodeImg" src="payment-qr.png" alt="QR Code" class="w-48 h-48 object-contain" onerror="this.src=qrCodeURL">
+                </div>
+                <div class="mt-4 p-3 bg-blue-50 border-l-4 border-blue-500 rounded w-full">
+                    <p class="text-xs text-gray-700">
+                        <i class="fas fa-info-circle text-blue-500 mr-1"></i>
+                        After paying, click <b>"Complete Donation"</b> on the left to confirm.
+                    </p>
+                </div>
+            </div>
+
+            </div> <!-- End Flex Container -->
+        </div>
+    </div>
+
+    <!-- EDIT ITEM MODAL -->
+    <div id="editModal" class="modal-overlay" onclick="closeEditModal(event)">
+        <div class="modal-content" onclick="event.stopPropagation()">
+            <button onclick="closeEditModal()" class="float-right text-gray-400 text-2xl hover:text-gray-600">
+                <i class="fas fa-times"></i>
+            </button>
+            <h3 class="text-2xl font-bold text-gray-800 mb-6 clear-both">Edit Item</h3>
+            
+            <form id="editItemForm" onsubmit="updateItem(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Item Name</label>
+                    <input type="text" required class="form-input w-full" id="editItemName">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Description</label>
+                    <input type="text" required class="form-input w-full" id="editItemDescription">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Stock Quantity</label>
+                    <input type="number" required class="form-input w-full" id="editItemQuantity" min="0">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Image URL</label>
+                    <input type="url" required class="form-input w-full" id="editItemImage">
+                </div>
+
+                <button type="submit" class="btn-secondary text-white w-full py-3 rounded-lg font-semibold">
+                    <i class="fas fa-save mr-2"></i>Save Changes
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div id="successModal" class="modal-overlay" onclick="closeSuccessModal(event)">
+        <div class="modal-content text-center" onclick="event.stopPropagation()">
+            <div class="mb-6">
+                <div class="bg-green-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-check text-green-600 text-4xl"></i>
+                </div>
+            </div>
+            <h3 id="successTitle" class="text-2xl font-bold text-gray-800 mb-3"></h3>
+            <p id="successMessage" class="text-gray-600 mb-6 text-lg"></p>
+            <button onclick="closeSuccessModal()" class="btn-primary text-white px-8 py-3 rounded-lg font-semibold">
+                <i class="fas fa-check mr-2"></i>Done
+            </button>
+        </div>
+    </div>
+
+    <!-- QR CODE MODAL -->
+    <div id="qrModal" class="modal-overlay" onclick="closeQRModal(event)">
+        <div class="modal-content text-center" onclick="event.stopPropagation()">
+            <h3 class="text-2xl font-bold text-gray-800 mb-6">Scan to Pay via UPI</h3>
+            
+            <div class="bg-gray-100 p-6 rounded-lg mb-6">
+                <div id="qrCodeImage" class="flex items-center justify-center bg-white p-4 rounded">
+                    <img id="qrCodeImg" src="payment-qr.png" alt="QR Code" style="max-width: 100%; max-height: 300px;" onerror="this.src='https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=UPI%3A%2F%2Fpay%3Fpa%3Ddansathi%40upi%26pn%3DDanSathi%26am%3D%26tn%3DDonation'">
+                </div>
+                <p class="text-gray-600 mt-4 text-sm">Scan this QR code with your UPI app to complete payment</p>
+            </div>
+
+            <div class="bg-blue-50 border-l-4 border-blue-500 p-4 rounded mb-6">
+                <p class="text-sm text-gray-700">
+                    <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                    <strong>After scanning and completing payment in your UPI app, return here and click "Confirm Payment" below.</strong>
+                </p>
+            </div>
+
+            <div class="space-y-3">
+                <button type="button" onclick="confirmUPIPayment()" class="btn-secondary text-white w-full py-3 rounded-lg font-semibold">
+                    <i class="fas fa-check mr-2"></i>Payment Completed - Proceed
+                </button>
+                <button type="button" onclick="closeQRModal()" class="bg-gray-400 hover:bg-gray-500 text-white w-full py-3 rounded-lg font-semibold transition">
+                    <i class="fas fa-times mr-2"></i>Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== CONFIGURATION =====
+        const API_BASE = '/api';
+        const PAYMENT_QR = 'payment-qr.png';
+        const FALLBACK_QR = 'https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=UPI%3A%2F%2Fpay%3Fpa%3Ddansathi%40upi%26pn%3DDanSathi%26am%3D%26tn%3DDonation';
+
+        function generateUniqueId(prefix) {
+            return prefix + '-' + Math.floor(Math.random() * 1000000) + '-' + Date.now().toString().slice(-4);
+        }
+
+        // Initialize inventory with default items
+        const defaultInventory = [
+            { id: 1, name: "Wheelchairs", description: "Comfortable mobility wheelchairs for residents", quantity: 5, image: "https://images.unsplash.com/photo-1587745416684-47a6b380635b?w=400&q=80" },
+            { id: 2, name: "Medicines", description: "Essential medical supplies and vitamins", quantity: 20, image: "https://images.unsplash.com/photo-1587854692152-cbe660dbde0f?w=400&q=80" },
+            { id: 3, name: "Walking Aids", description: "Canes, walkers, and balance support equipment", quantity: 8, image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80" },
+            { id: 4, name: "Food & Nutrition", description: "Healthy meals and nutritional supplements", quantity: 15, image: "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=400&q=80" },
+            { id: 5, name: "Bedding & Comfort", description: "Quality pillows, blankets, and mattresses", quantity: 12, image: "https://images.unsplash.com/photo-1586788944171-a1beba7f5a6b?w=400&q=80" },
+            { id: 6, name: "Entertainment", description: "Books, games, and activity materials", quantity: 10, image: "https://images.unsplash.com/photo-1507842217343-583f20270319?w=400&q=80" }
+        ];
+
+        let inventory = JSON.parse(localStorage.getItem('inventory')) || defaultInventory;
+        let donations = JSON.parse(localStorage.getItem('donations')) || [];
+        let visits = JSON.parse(localStorage.getItem('visits')) || [];
+        let currentEditingItem = null;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadInventory();
+            // Set minimum date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('visitDate').min = today;
+            if(document.getElementById('moneyDonorId')) {
+                document.getElementById('moneyDonorId').value = generateUniqueId('DONOR');
+            }
+            if(document.getElementById('visitorIdField')) {
+                document.getElementById('visitorIdField').value = generateUniqueId('VISITOR');
+            }
+            if(document.getElementById('newItemId')) {
+                document.getElementById('newItemId').value = generateUniqueId('ITEM');
+            }
+        });
+
+        // Navigation
+        function showSection(sectionId) {
+            console.log('showSection called:', sectionId);
+            const target = document.getElementById(sectionId);
+            if (!target) {
+                console.warn('Section not found:', sectionId);
+                return;
+            }
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active'));
+            target.classList.add('active');
+            window.scrollTo({top: 0, behavior: 'smooth'});
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        // Load inventory
+        function loadInventory() {
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+            
+            // For client-side data persistence, prioritize localStorage over API defaults
+            const localData = localStorage.getItem('inventory');
+            if (localData) {
+                inventory = JSON.parse(localData);
+                renderInventory(inventory);
+                return;
+            }
+            
+            // Try to load from API first if no local data
+            fetch(API_BASE + '/inventory')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success && data.data && data.data.length > 0) {
+                        // Use API data
+                        inventory = data.data;
+                        localStorage.setItem('inventory', JSON.stringify(inventory));
+                        renderInventory(inventory);
+                    } else {
+                        // Fallback to initial default inventory
+                        renderInventory(inventory);
+                    }
+                })
+                .catch(error => {
+                    console.log('Using local inventory fallback:', error);
+                    renderInventory(inventory);
+                });
+        }
+        
+        function renderInventory(items) {
+            const grid = document.getElementById('inventoryGrid');
+            grid.innerHTML = '';
+            
+            items.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl shadow-lg overflow-hidden card-hover transition';
+                const displayName = item.name;
+                card.innerHTML = `
+                    <img src="${item.image_url || item.image}" alt="${displayName}" class="w-full h-48 object-cover" onerror="this.src='https://images.unsplash.com/photo-1576091160550-2173dba999ef?w=400&q=80'">
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold text-gray-800 mb-2">${displayName}</h3>
+                        <p class="text-gray-600 mb-4">${item.description}</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="text-sm font-semibold text-green-600 bg-green-100 px-3 py-1 rounded-full">
+                                Stock: ${item.stock_quantity || item.quantity}
+                            </span>
+                        </div>
+                        <button onclick="openDonationModal('${displayName}')" class="btn-primary text-white w-full py-3 rounded-lg font-semibold transition">
+                            <i class="fas fa-gift mr-2"></i>Donate Now
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Donation Modal
+        function openDonationModal(itemName) {
+            document.getElementById('selectedItem').textContent = itemName;
+            document.getElementById('donationModal').classList.add('active');
+            document.getElementById('donationForm').reset();
+            document.getElementById('donorIdField').value = generateUniqueId('DONOR');
+            onPaymentMethodChange(); // To reset UPI visibility
+            document.body.style.overflow = 'hidden';
+        }
+
+        function openBundleModal(bundleName, itemsList) {
+            const itemsText = itemsList.join(' + ');
+            document.getElementById('selectedItem').textContent = `${bundleName} (${itemsText})`;
+            document.getElementById('donationModal').classList.add('active');
+            document.getElementById('donationForm').reset();
+            document.getElementById('donorIdField').value = generateUniqueId('DONOR');
+            document.getElementById('donationQuantity').value = 1;
+            onPaymentMethodChange(); // To reset UPI visibility
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeDonationModal(event) {
+            if (event && event.target.id !== 'donationModal') return;
+            document.getElementById('donationModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function submitDonation(event) {
+            event.preventDefault();
+            // We removed intercepting the submit for UPI, so just process it directly
+            processDonation();
+        }
+
+        function processDonation() {
+            const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+            const upiTxnId = document.getElementById('upiTransactionId').value.trim();
+
+            if (paymentMethod === 'upi' && !upiTxnId) {
+                alert('Please enter your UPI Transaction ID');
+                return;
+            }
+
+            const donation = {
+                donor_id: document.getElementById('donorIdField').value,
+                donor_name: document.getElementById('donorName').value,
+                email: document.getElementById('donorEmail').value,
+                phone: document.getElementById('donorPhone').value,
+                address: document.getElementById('donorAddress').value,
+                item_name: document.getElementById('selectedItem').textContent,
+                quantity: document.getElementById('donationQuantity').value,
+                payment_method: paymentMethod,
+                upi_transaction_id: paymentMethod === 'upi' ? upiTxnId : null
+            };
+
+            // Send to API Backend
+            const apiUrl = API_BASE + '/donations';
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(donation)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    donations.push({...donation, id: data.donation_id, date: new Date().toLocaleDateString()});
+                    localStorage.setItem('donations', JSON.stringify(donations));
+                    closeDonationModal();
+                    showSuccessModal('Thank You!', `Your donation of "${donation.item_name}" has been received. We deeply appreciate your generosity in helping our seniors.`);
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to process donation'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                donation.id = Date.now();
+                donation.date = new Date().toLocaleDateString();
+                donations.push(donation);
+                localStorage.setItem('donations', JSON.stringify(donations));
+                closeDonationModal();
+                showSuccessModal('Thank You!', `Your donation of "${donation.item_name}" has been recorded. We deeply appreciate your generosity in helping our seniors.`);
+            });
+        }
+
+        // ---------- New financial donation helpers ----------
+        let currentMoneyPaymentId = null;
+
+        async function startUpiDonation(event) {
+            event.preventDefault();
+            const amount = parseFloat(document.getElementById('moneyAmount').value);
+            if (isNaN(amount) || amount <= 0) {
+                alert('Please enter a valid amount');
+                return;
+            }
+
+            // Generate UPI URI client-side
+            const upiVPA = 'dansathi@upi';
+            const upiName = 'DanSathi';
+            const am = amount.toFixed(2);
+            const upiUri = `upi://pay?pa=${encodeURIComponent(upiVPA)}&pn=${encodeURIComponent(upiName)}&tn=Donation&am=${am}&cu=INR`;
+
+            currentMoneyPaymentId = 'DON' + Date.now();
+
+            // Show user's QR code with fallback to generated one
+            const qrFallback = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(upiUri)}`;
+            document.getElementById('moneyQRContainer').innerHTML = `
+                <img src="${PAYMENT_QR}" alt="UPI QR" class="mx-auto rounded-lg" style="max-width:280px" onerror="this.src='${qrFallback}'">
+                <p class="mt-3 text-sm text-gray-700">Scan the QR code to pay <strong>₹${am}</strong></p>
+                <p class="mt-1"><a href="${upiUri}" class="text-blue-600 underline" target="_blank">Open in UPI app</a></p>
+                <div class="mt-4">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Transaction ID (from your UPI app)</label>
+                    <input type="text" id="moneyTxnId" class="form-input w-full" placeholder="e.g. A23B45C678" />
+                    <button class="btn-secondary text-white w-full py-2 rounded-lg font-semibold mt-2" onclick="confirmMoneyPayment()">Confirm Payment</button>
+                </div>
+            `;
+            document.getElementById('moneyStatus').textContent = 'Scan the QR code to complete payment...';
+        }
+
+        async function confirmMoneyPayment() {
+            const txn = document.getElementById('moneyTxnId').value.trim();
+            if (!currentMoneyPaymentId) {
+                alert('No payment initiated');
+                return;
+            }
+            if (!txn) {
+                alert('Please enter the transaction ID from your UPI app');
+                return;
+            }
+
+            // Record payment in localStorage
+            const payment = {
+                id: currentMoneyPaymentId,
+                transaction_id: txn,
+                amount: document.getElementById('moneyAmount').value,
+                date: new Date().toISOString(),
+                status: 'confirmed'
+            };
+            let payments = JSON.parse(localStorage.getItem('payments') || '[]');
+            payments.push(payment);
+            localStorage.setItem('payments', JSON.stringify(payments));
+
+            // Also record as a donation
+            const donation = {
+                id: Date.now(),
+                donor_id: document.getElementById('moneyDonorId').value,
+                donor_name: 'Donor',
+                item_name: 'Monetary Donation (₹' + payment.amount + ')',
+                quantity: 1,
+                payment_method: 'UPI',
+                date: new Date().toLocaleDateString(),
+                amount: payment.amount,
+                transaction_id: txn,
+                upi_transaction_id: txn
+            };
+            donations.push(donation);
+            localStorage.setItem('donations', JSON.stringify(donations));
+
+            document.getElementById('moneyStatus').innerHTML = `<div class="success-badge"><i class="fas fa-check-circle mr-2"></i>Payment recorded successfully!<br>Transaction ID: ${txn}</div>`;
+            document.getElementById('moneyQRContainer').innerHTML = '';
+            document.getElementById('moneyForm').reset();
+            document.getElementById('moneyDonorId').value = generateUniqueId('DONOR');
+            currentMoneyPaymentId = null;
+        }
+
+        // polling utility (no-op in static mode)
+        async function pollPaymentStatus(paymentId, callback) {
+            // In Vercel static mode, payments are confirmed client-side
+            console.log('Payment polling not needed in static mode');
+        }
+
+        // ----------------------------------------------------
+
+        // Visit Booking
+        function submitVisit(event) {
+            event.preventDefault();
+            
+            const visit = {
+                visitor_id: document.getElementById('visitorIdField').value,
+                visitor_name: document.getElementById('visitorName').value,
+                email: document.getElementById('visitorEmail').value,
+                phone: document.getElementById('visitorPhone').value,
+                visit_date: document.getElementById('visitDate').value,
+                visit_time: document.getElementById('visitTime').value,
+                message: document.getElementById('visitMessage').value
+            };
+
+            // Send to API Backend
+            const apiUrl = API_BASE + '/visits';
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(visit)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Also save to localStorage for offline support
+                    const visitData = {...visit, id: data.visit_id, status: 'Pending'};
+                    visits.push(visitData);
+                    localStorage.setItem('visits', JSON.stringify(visits));
+                    
+                    document.getElementById('visitForm').reset();
+                    document.getElementById('visitorIdField').value = generateUniqueId('VISITOR');
+                    showSuccessModal('Visit Confirmed!', `We've received your booking for ${visit.visit_date}. Our team will contact you shortly to confirm the visit time.`);
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to book visit'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Fallback to localStorage if API fails
+                const visitData = {
+                    id: Date.now(),
+                    visitor_id: visit.visitor_id,
+                    visitor_name: visit.visitor_name,
+                    email: visit.email,
+                    phone: visit.phone,
+                    date: visit.visit_date,
+                    time: visit.visit_time,
+                    message: visit.message,
+                    status: 'Pending'
+                };
+                visits.push(visitData);
+                localStorage.setItem('visits', JSON.stringify(visits));
+                
+                document.getElementById('visitForm').reset();
+                document.getElementById('visitorIdField').value = generateUniqueId('VISITOR');
+                showSuccessModal('Visit Confirmed!', `We've received your booking for ${visit.visit_date}. Our team will contact you shortly to confirm the visit time.`);
+            });
+        }
+
+        // Admin Login
+        function submitAdminLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('adminUsername').value;
+            const password = document.getElementById('adminPassword').value;
+            
+            if (username === 'admin' && password === '1234') {
+                localStorage.setItem('adminLoggedIn', 'true');
+                showSection('admin-dashboard');
+                loadAdminDashboard();
+            } else {
+                alert('Invalid credentials. Try username: admin, password: 1234');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('adminLoggedIn');
+            showSection('home');
+        }
+
+        // Admin Dashboard
+        function loadAdminDashboard() {
+            updateStats();
+            loadInventoryTable();
+            loadRecentDonations();
+            loadScheduledVisits();
+            loadQRCodeAdmin();
+        }
+
+        function loadQRCodeAdmin() {
+            const savedQR = localStorage.getItem('qrCodeURL');
+            if (savedQR) {
+                document.getElementById('adminQRImg').src = savedQR;
+                qrCodeURL = savedQR;
+            }
+        }
+
+        function updateStats() {
+            const totalItems = inventory.reduce((sum, item) => {
+                const qty = item.stock_quantity !== undefined ? item.stock_quantity : item.quantity;
+                return sum + qty;
+            }, 0);
+            document.getElementById('totalItems').textContent = totalItems;
+            document.getElementById('totalDonations').textContent = donations.length;
+            document.getElementById('pendingVisits').textContent = visits.filter(v => v.status === 'Pending').length;
+        }
+
+        function loadInventoryTable() {
+            const table = document.getElementById('inventoryTable');
+            table.innerHTML = '';
+            
+            inventory.forEach(item => {
+                const row = document.createElement('tr');
+                const stockQty = item.stock_quantity !== undefined ? item.stock_quantity : item.quantity;
+                row.innerHTML = `
+                    <td class="px-6 py-4"><img src="${item.image_url || item.image}" alt="${item.name}" class="w-16 h-16 object-cover rounded-lg border border-gray-200"></td>
+                    <td class="px-6 py-4 font-semibold text-gray-800">
+                        ${item.name}<br>
+                        <span class="text-xs font-mono text-gray-500">${item.item_id || 'ID-'+item.id}</span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-600">${item.description}</td>
+                    <td class="px-6 py-4">
+                        <span class="bg-blue-100 text-blue-800 px-4 py-2 rounded-full font-semibold">${stockQty}</span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <button onclick="openEditModal(${item.id})" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg mr-2 transition">
+                            <i class="fas fa-edit mr-1"></i>Edit
+                        </button>
+                        <button onclick="deleteItem(${item.id})" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
+                            <i class="fas fa-trash mr-1"></i>Delete
+                        </button>
+                    </td>
+                `;
+                table.appendChild(row);
+            });
+        }
+
+        function addItem(event) {
+            event.preventDefault();
+            
+            const newItem = {
+                item_id: document.getElementById('newItemId').value,
+                name: document.getElementById('itemName').value,
+                description: document.getElementById('itemDescription').value,
+                stock_quantity: parseInt(document.getElementById('itemQuantity').value),
+                image_url: document.getElementById('itemImage').value
+            };
+
+            // Send to API Backend
+            const apiUrl = API_BASE + '/inventory';
+            
+            fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(newItem)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Also add to localStorage
+                    const itemData = {...newItem, id: data.item_id};
+                    inventory.push(itemData);
+                    localStorage.setItem('inventory', JSON.stringify(inventory));
+                    
+                    document.getElementById('addItemForm').reset();
+                    document.getElementById('newItemId').value = generateUniqueId('ITEM');
+                    loadInventory();
+                    loadInventoryTable();
+                    updateStats();
+                    showSuccessModal('Item Added!', `"${newItem.name}" has been added to the inventory.`);
+                } else {
+                    alert('Error: ' + (data.message || 'Failed to add item'));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Fallback to localStorage
+                newItem.id = Date.now();
+                inventory.push(newItem);
+                localStorage.setItem('inventory', JSON.stringify(inventory));
+                
+                document.getElementById('addItemForm').reset();
+                document.getElementById('newItemId').value = generateUniqueId('ITEM');
+                loadInventory();
+                loadInventoryTable();
+                updateStats();
+                showSuccessModal('Item Added!', `"${newItem.name}" has been added to the inventory.`);
+            });
+        }
+
+        function openEditModal(itemId) {
+            const item = inventory.find(i => i.id === itemId);
+            if (item) {
+                currentEditingItem = item;
+                document.getElementById('editItemName').value = item.name;
+                document.getElementById('editItemDescription').value = item.description;
+                document.getElementById('editItemQuantity').value = item.stock_quantity !== undefined ? item.stock_quantity : item.quantity;
+                document.getElementById('editItemImage').value = item.image_url || item.image;
+                document.getElementById('editModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeEditModal(event) {
+            if (event && event.target.id !== 'editModal') return;
+            document.getElementById('editModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateItem(event) {
+            event.preventDefault();
+            
+            if (currentEditingItem) {
+                const updatedData = {
+                    id: currentEditingItem.id,
+                    name: document.getElementById('editItemName').value,
+                    description: document.getElementById('editItemDescription').value,
+                    stock_quantity: parseInt(document.getElementById('editItemQuantity').value),
+                    image_url: document.getElementById('editItemImage').value
+                };
+                
+                // Send to API Backend
+                const apiUrl = API_BASE + '/inventory';
+                
+                fetch(apiUrl, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update localStorage
+                        currentEditingItem.name = updatedData.name;
+                        currentEditingItem.description = updatedData.description;
+                        currentEditingItem.stock_quantity = updatedData.stock_quantity;
+                        currentEditingItem.image_url = updatedData.image_url;
+                        
+                        localStorage.setItem('inventory', JSON.stringify(inventory));
+                        
+                        closeEditModal();
+                        loadInventory();
+                        loadInventoryTable();
+                        updateStats();
+                        showSuccessModal('Item Updated!', `"${currentEditingItem.name}" has been successfully updated.`);
+                    } else {
+                        alert('Error: ' + (data.message || 'Failed to update item'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Fallback to localStorage update
+                    currentEditingItem.name = updatedData.name;
+                    currentEditingItem.description = updatedData.description;
+                    currentEditingItem.stock_quantity = updatedData.stock_quantity;
+                    currentEditingItem.image_url = updatedData.image_url;
+                    
+                    localStorage.setItem('inventory', JSON.stringify(inventory));
+                    
+                    closeEditModal();
+                    loadInventory();
+                    loadInventoryTable();
+                    updateStats();
+                    showSuccessModal('Item Updated!', `"${currentEditingItem.name}" has been successfully updated.`);
+                });
+            }
+        }
+
+        function deleteItem(itemId) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                // Send delete request to API Backend
+                const apiUrl = API_BASE + '/inventory';
+                
+                fetch(apiUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ id: itemId })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Update localStorage
+                        inventory = inventory.filter(i => i.id !== itemId);
+                        localStorage.setItem('inventory', JSON.stringify(inventory));
+                        
+                        loadInventory();
+                        loadInventoryTable();
+                        updateStats();
+                    } else {
+                        alert('Error: ' + (data.message || 'Failed to delete item'));
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Fallback to localStorage delete
+                    inventory = inventory.filter(i => i.id !== itemId);
+                    localStorage.setItem('inventory', JSON.stringify(inventory));
+                    
+                    loadInventory();
+                    loadInventoryTable();
+                    updateStats();
+                });
+            }
+        }
+
+        function loadRecentDonations() {
+            const container = document.getElementById('recentDonations');
+            
+            if (donations.length === 0) {
+                container.innerHTML = '<p class="text-gray-600">No donations received yet.</p>';
+                return;
+            }
+
+            container.innerHTML = donations.slice(-5).reverse().map(d => {
+                const donorName = d.donor_name || d.donor || 'Anonymous';
+                const itemName = d.item_name || d.item || 'Unknown';
+                const quantity = d.quantity || 1;
+                const paymentMethod = d.payment_method || d.paymentMethod || 'Unknown';
+                const donationDate = d.donation_date ? new Date(d.donation_date).toLocaleDateString() : d.date;
+                
+                const donorIdStr = d.donor_id ? `<span class="text-xs font-mono bg-gray-200 px-1 rounded">${d.donor_id}</span>` : '';
+                const upiStr = d.upi_transaction_id ? `<p class="text-gray-500 text-xs mt-1">UPI Txn: <span class="font-mono bg-gray-100 px-1 rounded">${d.upi_transaction_id}</span></p>` : '';
+                return `
+                    <div class="border-l-4 border-blue-500 bg-blue-50 p-4 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-gray-800">${donorName} ${donorIdStr}</p>
+                                <p class="text-gray-600 text-sm">${itemName} (Qty: ${quantity})</p>
+                                <p class="text-gray-500 text-xs mt-1">${donationDate}</p>
+                                ${upiStr}
+                            </div>
+                            <span class="bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                ${paymentMethod.toUpperCase()}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function loadScheduledVisits() {
+            const container = document.getElementById('scheduledVisits');
+            
+            if (visits.length === 0) {
+                container.innerHTML = '<p class="text-gray-600">No scheduled visits yet.</p>';
+                return;
+            }
+
+            container.innerHTML = visits.map(v => {
+                const visitorName = v.visitor_name || v.name || 'Guest';
+                const visitDate = v.visit_date || v.date || 'N/A';
+                const visitTime = v.visit_time || v.time || 'N/A';
+                const status = v.status || 'Pending';
+                const phone = v.phone || 'N/A';
+                
+                const visitorIdStr = v.visitor_id ? `<span class="text-xs font-mono bg-gray-200 px-1 rounded">${v.visitor_id}</span>` : '';
+                return `
+                    <div class="border-l-4 border-green-500 bg-green-50 p-4 rounded">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-gray-800">${visitorName} ${visitorIdStr}</p>
+                                <p class="text-gray-600 text-sm"><i class="fas fa-phone mr-2"></i>${phone}</p>
+                                <p class="text-gray-500 text-xs"><i class="fas fa-calendar mr-2"></i>${visitDate} at ${visitTime}</p>
+                            </div>
+                            <span class="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-semibold">
+                                ${status}
+                            </span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Success Modal
+        function showSuccessModal(title, message) {
+            document.getElementById('successTitle').textContent = title;
+            document.getElementById('successMessage').textContent = message;
+            document.getElementById('successModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeSuccessModal(event) {
+            if (event && event.target.id !== 'successModal') return;
+            document.getElementById('successModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // QR Code Modal
+        let qrCodeURL = localStorage.getItem('qrCodeURL') || PAYMENT_QR;
+
+        function onPaymentMethodChange() {
+            const options = document.querySelectorAll('input[name="paymentMethod"]');
+            let selectedMethod = null;
+            options.forEach(opt => {
+                if(opt.checked) selectedMethod = opt.value;
+            });
+            
+            const sideQRSection = document.getElementById('sideQRSection');
+            const upiTransactionSection = document.getElementById('upiTransactionSection');
+            
+            if (selectedMethod === 'upi') {
+                sideQRSection.style.display = 'flex';
+                sideQRSection.classList.remove('hidden');
+                if (upiTransactionSection) {
+                    upiTransactionSection.classList.remove('hidden');
+                    document.getElementById('upiTransactionId').required = true;
+                }
+                document.getElementById('sideQRCodeImg').src = qrCodeURL;
+            } else {
+                sideQRSection.style.display = 'none';
+                sideQRSection.classList.add('hidden');
+                if (upiTransactionSection) {
+                    upiTransactionSection.classList.add('hidden');
+                    document.getElementById('upiTransactionId').required = false;
+                }
+            }
+        }
+
+        function showUPIQRCode() {
+            const qrImg = document.getElementById('qrCodeImg');
+            qrImg.src = qrCodeURL;
+            document.getElementById('qrModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function confirmUPIPayment() {
+            // Close QR modal and submit the form
+            closeQRModal();
+            // Auto-submit the donation form
+            document.getElementById('donationForm').dispatchEvent(new Event('submit'));
+        }
+
+        function closeQRModal(event) {
+            if (event && event.target.id !== 'qrModal') return;
+            document.getElementById('qrModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function updateQRCode(newURL) {
+            qrCodeURL = newURL;
+            localStorage.setItem('qrCodeURL', newURL);
+            document.getElementById('qrCodeImg').src = newURL;
+        }
+
+        // QR Code Management Functions
+        function updateQRCodeFromURL() {
+            const urlInput = document.getElementById('qrCodeURL').value;
+            
+            if (urlInput.trim() === '') {
+                alert('Please enter a QR code image URL');
+                return;
+            }
+            
+            // Validate it's a URL
+            try {
+                new URL(urlInput);
+            } catch (e) {
+                alert('Please enter a valid URL');
+                return;
+            }
+            
+            updateQRCode(urlInput);
+            document.getElementById('adminQRImg').src = urlInput;
+            document.getElementById('qrCodeURL').value = '';
+            alert('QR code updated successfully!');
+        }
+
+        function generateQRFromData() {
+            const dataInput = document.getElementById('qrCodeData').value;
+            
+            if (dataInput.trim() === '') {
+                alert('Please enter QR code data');
+                return;
+            }
+            
+            // Generate QR code using QR Server API
+            const encodedData = encodeURIComponent(dataInput);
+            const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodedData}`;
+            
+            updateQRCode(qrUrl);
+            document.getElementById('adminQRImg').src = qrUrl;
+            document.getElementById('qrCodeData').value = '';
+            alert('QR code generated and updated successfully!');
+        }
+
+        // Contact Form
+        function submitContactForm(event) {
+            event.preventDefault();
+            const contact = {
+                name: document.getElementById('contactName').value,
+                email: document.getElementById('contactEmail').value,
+                phone: document.getElementById('contactPhone').value,
+                message: document.getElementById('contactMessage').value,
+                date: new Date().toISOString()
+            };
+            let contacts = JSON.parse(localStorage.getItem('contacts') || '[]');
+            contacts.push(contact);
+            localStorage.setItem('contacts', JSON.stringify(contacts));
+            document.getElementById('contactForm').reset();
+            showSuccessModal('Message Sent!', 'Thank you for reaching out to DanSathi. We will get back to you within 24 hours.');
+        }
+    </script>
+</body>
+</html>
