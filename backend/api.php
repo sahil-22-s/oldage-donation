@@ -414,18 +414,20 @@ elseif ($action === 'inventory') {
         $input = json_decode(file_get_contents('php://input'), true);
         
         try {
-            $query = "INSERT INTO inventory (name, description, stock_quantity, image_url) 
-                     VALUES (:name, :description, :stock_quantity, :image_url)";
+            $query = "INSERT INTO inventory (item_id, name, description, stock_quantity, image_url) 
+                     VALUES (:item_id, :name, :description, :stock_quantity, :image_url)";
             
             $stmt = $pdo->prepare($query);
             $stmt->execute([
+                ':item_id' => $input['item_id'] ?? '',
                 ':name' => $input['name'] ?? '',
                 ':description' => $input['description'] ?? '',
                 ':stock_quantity' => $input['stock_quantity'] ?? 0,
                 ':image_url' => $input['image_url'] ?? ''
             ]);
             
-            $item_id = $pdo->lastInsertId();
+            $id = $pdo->lastInsertId();
+            $item_id = $input['item_id'] ?? ('ITEM-' . $id);
             
             http_response_code(201);
             echo json_encode([
@@ -450,13 +452,14 @@ elseif ($action === 'inventory') {
         }
         
         try {
-            $query = "UPDATE inventory SET name = :name, description = :description, 
+            $query = "UPDATE inventory SET item_id = :item_id, name = :name, description = :description, 
                      stock_quantity = :stock_quantity, image_url = :image_url, updated_at = CURRENT_TIMESTAMP 
                      WHERE id = :id";
             
             $stmt = $pdo->prepare($query);
             $result = $stmt->execute([
                 ':id' => $item_id,
+                ':item_id' => $input['item_id'] ?? '',
                 ':name' => $input['name'] ?? '',
                 ':description' => $input['description'] ?? '',
                 ':stock_quantity' => $input['stock_quantity'] ?? 0,

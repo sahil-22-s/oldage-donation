@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS visits (
 
 CREATE TABLE IF NOT EXISTS inventory (
     id SERIAL PRIMARY KEY,
+    item_id VARCHAR(50),
     name VARCHAR(255) NOT NULL,
     description TEXT,
     stock_quantity INT DEFAULT 0,

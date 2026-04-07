@@ -883,6 +883,11 @@
             
             <form id="editItemForm" onsubmit="updateItem(event)" class="space-y-4">
                 <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-2">Item ID</label>
+                    <input type="text" readonly class="form-input w-full bg-gray-100 text-gray-600 cursor-not-allowed" id="editItemId">
+                </div>
+                
+                <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Item Name</label>
                     <input type="text" required class="form-input w-full" id="editItemName">
                 </div>
@@ -1447,6 +1452,7 @@
             const item = inventory.find(i => i.id === itemId);
             if (item) {
                 currentEditingItem = item;
+                document.getElementById('editItemId').value = item.item_id || 'ITEM-' + item.id;
                 document.getElementById('editItemName').value = item.name;
                 document.getElementById('editItemDescription').value = item.description;
                 document.getElementById('editItemQuantity').value = item.stock_quantity !== undefined ? item.stock_quantity : item.quantity;
@@ -1468,6 +1474,7 @@
             if (currentEditingItem) {
                 const updatedData = {
                     id: currentEditingItem.id,
+                    item_id: document.getElementById('editItemId').value,
                     name: document.getElementById('editItemName').value,
                     description: document.getElementById('editItemDescription').value,
                     stock_quantity: parseInt(document.getElementById('editItemQuantity').value),
@@ -1488,6 +1495,7 @@
                 .then(data => {
                     if (data.success) {
                         // Update localStorage
+                        currentEditingItem.item_id = updatedData.item_id;
                         currentEditingItem.name = updatedData.name;
                         currentEditingItem.description = updatedData.description;
                         currentEditingItem.stock_quantity = updatedData.stock_quantity;
@@ -1507,6 +1515,7 @@
                 .catch(error => {
                     console.error('Error:', error);
                     // Fallback to localStorage update
+                    currentEditingItem.item_id = updatedData.item_id;
                     currentEditingItem.name = updatedData.name;
                     currentEditingItem.description = updatedData.description;
                     currentEditingItem.stock_quantity = updatedData.stock_quantity;
